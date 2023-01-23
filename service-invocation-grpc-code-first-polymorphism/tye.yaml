@@ -1,0 +1,28 @@
+# tye application configuration file
+# read all about it at https://github.com/dotnet/tye
+#
+# when you've given us a try, we'd love to know what you think:
+#    https://aka.ms/AA7q20u
+#
+name: sales
+extensions:
+
+  # Configuration for dapr goes here.
+- name: dapr
+  services:
+    company-manager-sales-service:
+      app-protocol: grpc
+
+# Services to run go here.
+services:
+- name: company-manager-sales-service
+  project: Company.Manager.Sales.Service/Company.Manager.Sales.Service.csproj
+- name: company-api-sales-service
+  project: Company.Api.Sales.Service/Company.Api.Sales.Service.csproj
+  bindings:
+    - name: http
+      port: 5241
+      protocol: http
+    - name: https
+      port: 7281
+      protocol: https

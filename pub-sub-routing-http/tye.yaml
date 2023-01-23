@@ -1,0 +1,37 @@
+# tye application configuration file
+# read all about it at https://github.com/dotnet/tye
+#
+# when you've given us a try, we'd love to know what you think:
+#    https://aka.ms/AA7q20u
+#
+name: pubsubrouting
+extensions:
+- name: dapr
+  log-level: info
+  components-path: ./tye-components/
+  config: config
+  services:
+    pubsubrouting-service:
+      app-protocol: http
+services:
+- name: pubsubrouting-service
+  project: PubSubRouting.Service/PubSubRouting.Service.csproj  
+- name: pubsubrouting-api
+  project: PubSubRouting.Api/PubSubRouting.Api.csproj
+  bindings:
+    - name: http
+      port: 5064
+      protocol: http
+    - name: https
+      port: 7243
+      protocol: https
+- name: rabbitmq
+  image: rabbitmq:3-management-alpine
+  bindings:
+    - name: rabbitmq
+      port: 5672
+      protocol: amqp
+    - name: rabbitmq-management
+      port: 15672
+      containerPort: 15672
+      protocol: http

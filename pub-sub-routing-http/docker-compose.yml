@@ -1,0 +1,61 @@
+version: '3.4'
+
+services:
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  zipkin:
+    image: openzipkin/zipkin:latest
+    ports:
+      - "5411:9411"
+
+  pubsubrouting.api:
+    image: ${DOCKER_REGISTRY-}pubsubroutingapi
+    build:
+      context: .
+      dockerfile: PubSubRouting.Api/Dockerfile
+    ports:
+      - "57000:50001"
+
+  pubsubrouting.api-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", 
+      "-app-id", "pubsubrouting-api", 
+      "-app-port", "80", 
+      "-app-protocol", "http", 
+      "-components-path", "/components", 
+      "-config", "/components/config.yaml", 
+      ]
+    volumes:
+      - "./components/:/components"
+    depends_on:
+      - pubsubrouting.api
+    network_mode: "service:pubsubrouting.api"
+
+  pubsubrouting.service:
+    image: ${DOCKER_REGISTRY-}pubsubroutingservice
+    build:
+      context: .
+      dockerfile: PubSubRouting.Service/Dockerfile
+    ports:
+      - "58000:50001"
+      
+  pubsubrouting.service-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", 
+      "-app-id", "pubsubrouting-service", 
+      "-app-port", "80", 
+      "-app-protocol", "http", 
+      "-components-path", "/components", 
+      "-config", "/components/config.yaml", 
+      "-log-level", "debug"
+      ]
+    volumes:
+      - "./components/:/components"
+    depends_on:
+      - pubsubrouting.service
+    network_mode: "service:pubsubrouting.service"

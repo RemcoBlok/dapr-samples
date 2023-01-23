@@ -1,0 +1,11 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "tye-run",
+			"type": "tye-run",
+			"watch": true,
+			"framework": "net7.0"
+		}
+	]
+}

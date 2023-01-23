@@ -1,0 +1,41 @@
+version: '3.4'
+
+services:
+  company.api.sales.service:
+    image: ${DOCKER_REGISTRY-}companyapisalesservice
+    build:
+      context: .
+      dockerfile: company.api.sales.service/Dockerfile
+    ports:
+      - "55000:50001"
+
+  company.api.sales.service-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", 
+      "-app-id", "company-api-sales-service", 
+      "-app-port", "80", 
+      "-app-protocol", "http" 
+      ]
+    depends_on:
+      - company.api.sales.service
+    network_mode: "service:company.api.sales.service"
+
+  company.manager.sales.service:
+    image: ${DOCKER_REGISTRY-}companymanagersalesservice
+    build:
+      context: .
+      dockerfile: Company.Manager.Sales.Service/Dockerfile
+    ports:
+      - "56000:50001"
+
+  company.manager.sales.service-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", 
+      "-app-id", "company-manager-sales-service", 
+      "-app-port", "80", 
+      "-app-protocol", "grpc", 
+      "-log-level", "debug"
+      ]
+    depends_on:
+      - company.manager.sales.service
+    network_mode: "service:company.manager.sales.service"
