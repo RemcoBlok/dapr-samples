@@ -30,7 +30,7 @@ namespace Company.Framework
         }
 
         static Func<object, TParamBase, TResultBase> CreateDelegateUnknownTargetDowncastParamUpcastResultHelper<TTarget, TParam, TResult, TParamBase, TResultBase>(MethodInfo method)
-            where TParamBase : class
+            where TParamBase : notnull
             where TParam : TParamBase
             where TResult : TResultBase
         {            
@@ -49,7 +49,7 @@ namespace Company.Framework
         }
 
         static Func<TTargetBase, TResult> CreateDelegateDowncastTargetHelper<TTarget, TResult, TTargetBase>(MethodInfo method)
-            where TTargetBase : class
+            where TTargetBase : notnull
             where TTarget : TTargetBase
         {            
             Func<TTarget, TResult> func = method.CreateDelegate<Func<TTarget, TResult>>();

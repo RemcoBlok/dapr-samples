@@ -1,15 +1,19 @@
-﻿using Company.Manager.Sales.Interface.Restaurant;
+﻿using Company.Manager.Sales.Interface;
+using Company.Manager.Sales.Interface.Restaurant;
 
 namespace Company.Manager.Sales.Service.Restaurant
 {
     public class UseCases
     {
-        public Task<FindResponse> FindItemAsync(FindCriteria criteria)
+        public Task<IResponse<FindResponse>> FindItemAsync(FindCriteria criteria)
         {
-            return Task.FromResult(new FindResponse
+            return Task.FromResult<IResponse<FindResponse>>(new Response<FindResponse>()
             {
-                Name = criteria.Term,
-                RestaurantField = criteria.RestaurantField
+                Value = new()
+                {
+                    Name = criteria.Term,
+                    RestaurantField = criteria.RestaurantField
+                }
             });
         }
     }

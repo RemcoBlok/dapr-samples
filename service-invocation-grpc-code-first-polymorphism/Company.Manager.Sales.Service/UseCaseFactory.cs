@@ -1,14 +1,13 @@
 ﻿using Company.Framework;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace Company.Manager.Sales.Service
 {
-    static class UseCaseFactory<C, R>
-        where C : class
-        where R : class
+    static class UseCaseFactory<C, R> 
+        where C : notnull 
+        where R : notnull
     {
         private readonly record struct Key(string Namespace, string Name);
 
@@ -21,7 +20,8 @@ namespace Company.Manager.Sales.Service
             string typeName = key.Namespace.Replace("Interface", "Service") + ".UseCases";
 
             Type implementationType = Assembly.GetExecutingAssembly().GetType(typeName, true)!;            
-            MethodInfo method = implementationType.GetMethod(key.Name) ?? throw new InvalidOperationException($"{implementationType.FullName} does not have a public method {key.Name}");
+            MethodInfo method = implementationType.GetMethod(key.Name) 
+                ?? throw new InvalidOperationException($"{implementationType.FullName} does not have a public method {key.Name}");
             
             Func<object, C, Task<R>> useCaseFunc = ReflectionUtil.CreateCovariantTaskDelegate<C, R>(method);
 

@@ -5,9 +5,9 @@ namespace Company.Manager.Sales.Service
 {
     public class SalesManager : ISalesManager
     {
-        public async Task<FindResponseBase> FindItemAsync(FindCriteriaBase criteria, CallContext context = default)
+        public async Task<IResponse<FindResponseBase>> FindItemAsync(FindCriteriaBase criteria, CallContext context = default)
         {
-            FindResponseBase response = await UseCaseFactory<FindCriteriaBase, FindResponseBase>.CallAsync(criteria);
+            IResponse<FindResponseBase> response = await UseCaseFactory<FindCriteriaBase, IResponse<FindResponseBase>>.CallAsync(criteria);
             return response;
         }
     }
