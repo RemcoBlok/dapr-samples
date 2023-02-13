@@ -35,8 +35,8 @@ app.UseHttpsRedirection();
 
 app.MapPost("api/sales/finditem", async (ISalesManager salesManager, FindCriteriaBase criteria) =>
 {
-    FindResponseBase response = await salesManager.FindItemAsync(criteria);
-   return TypedResults.Ok(response);
+    IResponse<FindResponseBase> response = await salesManager.FindItemAsync(criteria);
+    return TypedResults.Ok(response);
 })
 .WithName("Sales.FindItem")
 .WithOpenApi();

@@ -7,6 +7,6 @@ namespace Company.Manager.Sales.Interface
     public interface ISalesManager
     {
         [Operation]
-        Task<FindResponseBase> FindItemAsync(FindCriteriaBase criteria, CallContext context = default);
+        Task<IResponse<FindResponseBase>> FindItemAsync(FindCriteriaBase criteria, CallContext context = default);
     }
 }

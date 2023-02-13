@@ -1,14 +1,13 @@
 ﻿using Company.Framework;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace Company.Manager.Sales.Service
 {
-    static class UseCaseFactory<C, R>
-        where C : class
-        where R : class
+    static class UseCaseFactory<C, R> 
+        where C : notnull 
+        where R : notnull
     {
         private readonly record struct Key(string Namespace, string Name);
 

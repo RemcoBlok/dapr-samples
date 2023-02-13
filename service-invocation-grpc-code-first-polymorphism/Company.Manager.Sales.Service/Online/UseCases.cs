@@ -1,15 +1,19 @@
-﻿using Company.Manager.Sales.Interface.Online;
+﻿using Company.Manager.Sales.Interface;
+using Company.Manager.Sales.Interface.Online;
 
 namespace Company.Manager.Sales.Service.Online
 {
     public class UseCases
-    {        
-        public Task<FindResponse> FindItemAsync(FindCriteria criteria)
+    {
+        public Task<IResponse<FindResponse>> FindItemAsync(FindCriteria criteria)
         {
-            return Task.FromResult(new FindResponse
+            return Task.FromResult<IResponse<FindResponse>>(new Response<FindResponse>()
             {
-                Name = criteria.Term,
-                OnlineField = criteria.OnlineField
+                Value = new()
+                {
+                    Name = criteria.Term,
+                    OnlineField = criteria.OnlineField
+                }
             });
         }
     }
