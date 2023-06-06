@@ -7,14 +7,16 @@ namespace Company.Manager.Sales.Service.Restaurant
     {
         public Task<IResponse<FindResponse>> FindItemAsync(FindCriteria criteria)
         {
-            return Task.FromResult<IResponse<FindResponse>>(new Response<FindResponse>()
+            IResponse<FindResponse> response = new Response<FindResponse>()
             {
                 Value = new()
                 {
                     Name = criteria.Term,
                     RestaurantField = criteria.RestaurantField
                 }
-            });
+            };
+
+            return Task.FromResult(response);
         }
     }
 }

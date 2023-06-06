@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics;
+using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 
 namespace Company.Framework
@@ -11,14 +12,31 @@ namespace Company.Framework
 
             if (type.IsAbstract && type.IsClass)
             {
-                List<JsonDerivedType> derivedTypes = typeInfo.Type.Assembly.GetTypes()
-                    .Where(t => !t.IsAbstract && t.IsClass && typeInfo.Type.IsAssignableFrom(t))
-                    .Select(t => new JsonDerivedType(t, t.FullName!))
+                Type[] assemblyTypes = typeInfo.Type.Assembly.GetTypes();
+
+                Func<Type, bool> isDerivedTypePredicate =
+                    (Type t) =>
+                    {
+                        bool isDerivedType = t.IsAbstract == false && t.IsClass && typeInfo.Type.IsAssignableFrom(t);
+                        return isDerivedType;
+                    };
+
+                Func<Type, JsonDerivedType> derivedTypeSelector =
+                    (Type t) =>
+                    {
+                        Debug.Assert(t.FullName != null);
+                        JsonDerivedType derivedType = new JsonDerivedType(t, t.FullName);
+                        return derivedType;
+                    };
+
+                List<JsonDerivedType> derivedTypes = assemblyTypes
+                    .Where(isDerivedTypePredicate)
+                    .Select(derivedTypeSelector)
                     .ToList();
 
-                if (derivedTypes.Any())
+                if (derivedTypes.Any() == true)
                 {
-                    typeInfo.PolymorphismOptions = new();
+                    typeInfo.PolymorphismOptions = new JsonPolymorphismOptions();
 
                     foreach (JsonDerivedType derivedType in derivedTypes)
                     {
@@ -29,16 +47,14 @@ namespace Company.Framework
             // workaround for https://github.com/dotnet/aspnetcore/issues/44852
             // a pr with a fix was merged in https://github.com/dotnet/aspnetcore/pull/45405
             // but won't arrive until aspnetcore 8.0
-            else if (!type.IsAbstract && type.IsClass && type.BaseType != null &&
-                type.BaseType.IsAbstract && type.BaseType.IsClass)
+            else if (type.IsAbstract == false && type.IsClass &&
+                type.BaseType != null && type.BaseType.IsAbstract && type.BaseType.IsClass)
             {
-                typeInfo.PolymorphismOptions = new()
-                {
-                    DerivedTypes =
-                    {
-                        new(type, type.FullName!)
-                    }
-                };
+                Debug.Assert(type.FullName != null);
+                JsonDerivedType derivedType = new JsonDerivedType(type, type.FullName);
+
+                typeInfo.PolymorphismOptions = new JsonPolymorphismOptions();
+                typeInfo.PolymorphismOptions.DerivedTypes.Add(derivedType);
             }
 
             return typeInfo;
